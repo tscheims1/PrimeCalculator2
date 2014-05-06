@@ -14,12 +14,11 @@ public class PrimeSimulator {
 		
 		 ArrayList<Future<ArrayList<Integer>>> futureObj = new ArrayList<Future<ArrayList<Integer>>>();
 		 ArrayList<Integer> primes = new ArrayList<Integer>();
-		 int maxThreads = 150;//bug bei 1500
-		 int maxValue = 1000; //bug bei 100000
-		 int startValue=0;
+		 int maxThreads = 1500;
+		 int maxValue = 100000; 
+		 int startValue=1;
 		 int intervall =  maxValue / maxThreads;
-		 if(maxValue % maxThreads != 0)
-			 intervall++;
+
 		long startTime = System.currentTimeMillis();
 		for(int i = 0; i < maxValue; i++)
 		{
@@ -31,17 +30,27 @@ public class PrimeSimulator {
 		
 		 long startTimeThreads = System.currentTimeMillis();
 		 ExecutorService pool = Executors.newFixedThreadPool(maxThreads);
+		 int addAdditionalNumbers = maxValue - maxThreads*intervall;
 		 
-		 for(int i = 1; i <= maxThreads && startValue < maxValue;i++)
+		 
+		 for(int i = 1; i <= maxThreads ;i++)
 		 {
-			 int end = i*intervall > maxValue?maxValue : i*intervall;
-			 
+			 int end  = startValue +intervall-1;
+			 /*
+			  * add to the first n thread a number more,
+			  * to avoid rounding errors
+			  */
+			 if(addAdditionalNumbers > 0)
+			 {
+				 end++;
+				 addAdditionalNumbers--;
+			 }
 			 /* l o o p */
 			
 			 PrimeCallable pc = new PrimeCallable(startValue,end);
 			 Future<ArrayList<Integer>> future = pool.submit(pc);
 			 futureObj.add(future);
-			 startValue = i*intervall+1;
+			 startValue = end+1;
 			 /* l o o p   end */
 		 }
 		 
