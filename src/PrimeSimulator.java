@@ -18,6 +18,8 @@ public class PrimeSimulator {
 		 int maxValue = 1000; //bug bei 100000
 		 int startValue=0;
 		 int intervall =  maxValue / maxThreads;
+		 if(maxValue % maxThreads != 0)
+			 intervall++;
 		long startTime = System.currentTimeMillis();
 		for(int i = 0; i < maxValue; i++)
 		{
@@ -30,12 +32,13 @@ public class PrimeSimulator {
 		 long startTimeThreads = System.currentTimeMillis();
 		 ExecutorService pool = Executors.newFixedThreadPool(maxThreads);
 		 
-		 for(int i = 1; i <= maxThreads;i++)
+		 for(int i = 1; i <= maxThreads && startValue < maxValue;i++)
 		 {
+			 int end = i*intervall > maxValue?maxValue : i*intervall;
 			 
-			 System.out.println("Start"+startValue+ "   end  "+i*intervall);
 			 /* l o o p */
-			 PrimeCallable pc = new PrimeCallable(startValue,i*intervall);
+			
+			 PrimeCallable pc = new PrimeCallable(startValue,end);
 			 Future<ArrayList<Integer>> future = pool.submit(pc);
 			 futureObj.add(future);
 			 startValue = i*intervall+1;
@@ -85,7 +88,7 @@ public class PrimeSimulator {
 		}
 		else
 		{
-			System.out.println(combinedList.size() + "    "+primes.size());
+			//System.out.println(combinedList.size() + "    "+primes.size());
 			System.out.println("Wrong!!!");
 		}
 		
